@@ -17,21 +17,25 @@ workflows:
         script: npx expo prebuild --platform ios --clean
       - name: Install CocoaPods
         script: cd ios && pod install
-      - name: List available schemes
+      - name: Debug workspace
         script: |
-          cd ios
-          xcodebuild -list -workspace *.xcworkspace
+          echo "=== iOS folder contents ==="
+          ls -la ios/
+          echo "=== Workspace files ==="
+          find ios -name "*.xcworkspace" -type d
+          echo "=== Scheme files ==="
+          find ios -name "*.xcscheme"
       - name: Build iOS
         script: |
           cd ios
-          WORKSPACE=$(ls *.xcworkspace | head -1)
-          SCHEME=$(xcodebuild -list -workspace "$WORKSPACE" | grep -A 100 "Schemes:" | tail -n +2 | head -1 | xargs)
-          echo "Building with workspace: $WORKSPACE and scheme: $SCHEME"
-          xcodebuild -workspace "$WORKSPACE" \
-            -scheme "$SCHEME" \
+          WORKSPACE_NAME=$(find . -maxdepth 1 -name "*.xcworkspace" -type d | head -1 | sed 's|./||')
+          echo "Found workspace: $WORKSPACE_NAME"
+          SCHEME_NAME="${WORKSPACE_NAME%.xcworkspace}"
+          echo "Using scheme: $SCHEME_NAME"
+          xcodebuild -workspace "$WORKSPACE_NAME" \
+            -scheme "$SCHEME_NAME" \
             -configuration Release \
-            -archivePath ../build/$SCHEME.xcarchive \
-            archive
+            -archivePath ../build/app.xcarchive \
+            archive CODE_SIGNING_ALLOWED=NO
     artifacts:
-      - mobile-app/build/**/*.ipa
       - mobile-app/build/**/*.xcarchive
