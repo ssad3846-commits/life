@@ -4,10 +4,15 @@ workflows:
     max_build_duration: 120
     instance_type: mac_mini_m2
     working_directory: mobile-app
+    integrations:
+      app_store_connect: Codemagic
     environment:
       node: 18
       xcode: 16.2
       cocoapods: default
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.lifestylegym.member
     scripts:
       - name: Install dependencies
         script: npm install
@@ -17,15 +22,19 @@ workflows:
         script: npx expo prebuild --platform ios --clean
       - name: Install CocoaPods
         script: cd ios && pod install
-      - name: Build iOS
+      - name: Set up code signing
+        script: xcode-project use-profiles
+      - name: Build IPA
         script: |
           cd ios
           WORKSPACE=$(find . -maxdepth 1 -name "*.xcworkspace" -type d | head -1 | sed 's|./||')
           SCHEME="${WORKSPACE%.xcworkspace}"
-          xcodebuild -workspace "$WORKSPACE" \
-            -scheme "$SCHEME" \
-            -configuration Release \
-            -archivePath ../build/app.xcarchive \
-            archive CODE_SIGNING_ALLOWED=NO
+          xcode-project build-ipa \
+            --workspace "$WORKSPACE" \
+            --scheme "$SCHEME"
     artifacts:
-      - mobile-app/build/**/*.xcarchive
+      - mobile-app/build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
