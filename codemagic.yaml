@@ -19,11 +19,11 @@ workflows:
         script: cd ios && pod install
       - name: Build iOS
         script: |
-          xcodebuild -workspace ios/lifestylegym.xcworkspace \
-            -scheme lifestylegym \
+          xcodebuild -workspace ios/lifestylegymember.xcworkspace \
+            -scheme lifestylegymember \
             -configuration Release \
-            -archivePath build/lifestylegym.xcarchive \
+            -archivePath build/lifestylegymember.xcarchive \
             archive
     artifacts:
-      - build/**/*.ipa
-      - build/**/*.xcarchive
+      - mobile-app/build/**/*.ipa
+      - mobile-app/build/**/*.xcarchive
