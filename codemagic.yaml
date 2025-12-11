@@ -4,10 +4,17 @@ workflows:
     max_build_duration: 120
     instance_type: mac_mini_m2
     working_directory: mobile-app
+    integrations:
+      app_store_connect: Codemagic
     environment:
       node: 18
       xcode: 16.2
       cocoapods: default
+      groups:
+        - appstore
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.lifestylegym.member
     scripts:
       - name: Install dependencies
         script: npm install
@@ -17,25 +24,27 @@ workflows:
         script: npx expo prebuild --platform ios --clean
       - name: Install CocoaPods
         script: cd ios && pod install
-      - name: Debug workspace
-        script: |
-          echo "=== iOS folder contents ==="
-          ls -la ios/
-          echo "=== Workspace files ==="
-          find ios -name "*.xcworkspace" -type d
-          echo "=== Scheme files ==="
-          find ios -name "*.xcscheme"
+      - name: Set up code signing
+        script: xcode-project use-profiles
       - name: Build iOS
         script: |
           cd ios
-          WORKSPACE_NAME=$(find . -maxdepth 1 -name "*.xcworkspace" -type d | head -1 | sed 's|./||')
-          echo "Found workspace: $WORKSPACE_NAME"
-          SCHEME_NAME="${WORKSPACE_NAME%.xcworkspace}"
-          echo "Using scheme: $SCHEME_NAME"
-          xcodebuild -workspace "$WORKSPACE_NAME" \
-            -scheme "$SCHEME_NAME" \
+          WORKSPACE=$(find . -maxdepth 1 -name "*.xcworkspace" -type d | head -1 | sed 's|./||')
+          SCHEME="${WORKSPACE%.xcworkspace}"
+          xcodebuild -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
             -configuration Release \
             -archivePath ../build/app.xcarchive \
-            archive CODE_SIGNING_ALLOWED=NO
+            archive
+      - name: Export IPA
+        script: |
+          xcode-project ipa-build \
+            --archive build/app.xcarchive \
+            --export-options-plist /Users/builder/export_options.plist
     artifacts:
+      - mobile-app/build/**/*.ipa
       - mobile-app/build/**/*.xcarchive
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
