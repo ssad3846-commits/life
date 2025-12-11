@@ -5,7 +5,7 @@ workflows:
     instance_type: mac_mini_m2
     working_directory: mobile-app
     integrations:
-      app_store_connect: Codemagic
+      app_store_connect: cash
     environment:
       node: 18
       xcode: 16.2
@@ -33,7 +33,7 @@ workflows:
             --workspace "$WORKSPACE" \
             --scheme "$SCHEME"
     artifacts:
-      - mobile-app/build/ios/ipa/*.ipa
+      - build/ios/ipa/*.ipa
     publishing:
       app_store_connect:
         auth: integration
