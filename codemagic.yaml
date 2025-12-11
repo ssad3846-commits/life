@@ -17,20 +17,20 @@ workflows:
         script: npx expo prebuild --platform ios --clean
       - name: Install CocoaPods
         script: cd ios && pod install
-      - name: Find workspace name
+      - name: List available schemes
         script: |
-          WORKSPACE=$(ls ios/*.xcworkspace | head -1)
-          SCHEME=$(basename "$WORKSPACE" .xcworkspace)
-          echo "Found workspace: $WORKSPACE"
-          echo "Using scheme: $SCHEME"
-          echo "WORKSPACE=$WORKSPACE" >> $CM_ENV
-          echo "SCHEME=$SCHEME" >> $CM_ENV
+          cd ios
+          xcodebuild -list -workspace *.xcworkspace
       - name: Build iOS
         script: |
-          xcodebuild -workspace $WORKSPACE \
-            -scheme $SCHEME \
+          cd ios
+          WORKSPACE=$(ls *.xcworkspace | head -1)
+          SCHEME=$(xcodebuild -list -workspace "$WORKSPACE" | grep -A 100 "Schemes:" | tail -n +2 | head -1 | xargs)
+          echo "Building with workspace: $WORKSPACE and scheme: $SCHEME"
+          xcodebuild -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
             -configuration Release \
-            -archivePath build/$SCHEME.xcarchive \
+            -archivePath ../build/$SCHEME.xcarchive \
             archive
     artifacts:
       - mobile-app/build/**/*.ipa
