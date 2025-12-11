@@ -1,0 +1,107 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "confirm": "Confirm",
+    "back": "Back",
+    "logout": "Logout",
+    "welcome": "Welcome",
+    "sar": "SAR"
+  },
+  "auth": {
+    "login": "Login",
+    "idNumber": "ID Number",
+    "phone": "Phone Number",
+    "loginButton": "Sign In",
+    "loginError": "Invalid credentials",
+    "welcome": "Welcome to Smart Gym",
+    "enterCredentials": "Enter your credentials to continue"
+  },
+  "tabs": {
+    "home": "Home",
+    "subscriptions": "Subscriptions",
+    "payments": "Payments",
+    "checkins": "Check-ins",
+    "offers": "Offers",
+    "profile": "Profile"
+  },
+  "home": {
+    "title": "Dashboard",
+    "memberInfo": "Member Information",
+    "memberNumber": "Member #",
+    "activeSubscription": "Active Subscription",
+    "noSubscription": "No Active Subscription",
+    "validUntil": "Valid Until",
+    "status": "Status",
+    "new": "New",
+    "active": "Active",
+    "former": "Former"
+  },
+  "subscriptions": {
+    "title": "My Subscriptions",
+    "current": "Current Subscription",
+    "history": "Subscription History",
+    "plan": "Plan",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "status": "Status",
+    "active": "Active",
+    "expired": "Expired",
+    "cancelled": "Cancelled",
+    "noSubscriptions": "No subscriptions found",
+    "autoRenew": "Auto-renew enabled"
+  },
+  "payments": {
+    "title": "Payment History",
+    "amount": "Amount",
+    "date": "Date",
+    "method": "Payment Method",
+    "status": "Status",
+    "invoice": "Invoice",
+    "downloadInvoice": "Download Invoice",
+    "noPayments": "No payments found",
+    "pending": "Pending",
+    "completed": "Completed",
+    "failed": "Failed",
+    "refunded": "Refunded"
+  },
+  "checkins": {
+    "title": "Check-in History",
+    "checkInTime": "Check-in Time",
+    "checkOutTime": "Check-out Time",
+    "duration": "Duration",
+    "noCheckins": "No check-ins found",
+    "minutes": "minutes",
+    "hours": "hours"
+  },
+  "profile": {
+    "title": "My Profile",
+    "personalInfo": "Personal Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone",
+    "email": "Email",
+    "idNumber": "ID Number",
+    "dateOfBirth": "Date of Birth",
+    "gender": "Gender",
+    "address": "Address",
+    "joinDate": "Member Since",
+    "logoutConfirm": "Are you sure you want to logout?",
+    "male": "Male",
+    "female": "Female"
+  },
+  "offers": {
+    "title": "Offers",
+    "noOffers": "No offers available",
+    "active": "Active",
+    "expired": "Expired",
+    "discount": "OFF",
+    "validFrom": "Valid From",
+    "validUntil": "Valid Until"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "597707844138",
+    "project_id": "lifestyle-a80de",
+    "storage_bucket": "lifestyle-a80de.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:597707844138:android:cb710f19372f5935e87153",
+        "android_client_info": {
+          "package_name": "com.smartgym.member"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaE_N6HLvQ2H-rYUoqbgPY823fJRBgdj4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

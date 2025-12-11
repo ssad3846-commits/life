@@ -1,0 +1,107 @@
+{
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "خطأ",
+    "success": "نجح",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "confirm": "تأكيد",
+    "back": "رجوع",
+    "logout": "تسجيل الخروج",
+    "welcome": "مرحباً",
+    "sar": "ر.س"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "idNumber": "رقم الهوية",
+    "phone": "رقم الجوال",
+    "loginButton": "دخول",
+    "loginError": "بيانات دخول غير صحيحة",
+    "welcome": "مرحباً بك في نادي لايف ستايل الرياضي",
+    "enterCredentials": "أدخل بياناتك للمتابعة"
+  },
+  "tabs": {
+    "home": "الرئيسية",
+    "subscriptions": "الاشتراكات",
+    "payments": "الدفعات",
+    "checkins": "الحضور",
+    "offers": "العروض",
+    "profile": "الملف الشخصي"
+  },
+  "home": {
+    "title": "لوحة التحكم",
+    "memberInfo": "معلومات العضو",
+    "memberNumber": "رقم العضو",
+    "activeSubscription": "الاشتراك النشط",
+    "noSubscription": "لا يوجد اشتراك نشط",
+    "validUntil": "صالح حتى",
+    "status": "الحالة",
+    "new": "جديد",
+    "active": "نشط",
+    "former": "سابق"
+  },
+  "subscriptions": {
+    "title": "اشتراكاتي",
+    "current": "الاشتراك الحالي",
+    "history": "سجل الاشتراكات",
+    "plan": "الخطة",
+    "startDate": "تاريخ البداية",
+    "endDate": "تاريخ النهاية",
+    "status": "الحالة",
+    "active": "نشط",
+    "expired": "منتهي",
+    "cancelled": "ملغي",
+    "noSubscriptions": "لا توجد اشتراكات",
+    "autoRenew": "التجديد التلقائي مفعّل"
+  },
+  "payments": {
+    "title": "سجل الدفعات",
+    "amount": "المبلغ",
+    "date": "التاريخ",
+    "method": "طريقة الدفع",
+    "status": "الحالة",
+    "invoice": "الفاتورة",
+    "downloadInvoice": "تحميل الفاتورة",
+    "noPayments": "لا توجد دفعات",
+    "pending": "قيد الانتظار",
+    "completed": "مكتمل",
+    "failed": "فشل",
+    "refunded": "مُسترد"
+  },
+  "checkins": {
+    "title": "سجل الحضور",
+    "checkInTime": "وقت الدخول",
+    "checkOutTime": "وقت الخروج",
+    "duration": "المدة",
+    "noCheckins": "لا يوجد سجل حضور",
+    "minutes": "دقيقة",
+    "hours": "ساعة"
+  },
+  "profile": {
+    "title": "ملفي الشخصي",
+    "personalInfo": "المعلومات الشخصية",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "phone": "الجوال",
+    "email": "البريد الإلكتروني",
+    "idNumber": "رقم الهوية",
+    "dateOfBirth": "تاريخ الميلاد",
+    "gender": "الجنس",
+    "address": "العنوان",
+    "joinDate": "عضو منذ",
+    "logoutConfirm": "هل أنت متأكد من تسجيل الخروج؟",
+    "male": "ذكر",
+    "female": "أنثى"
+  },
+  "offers": {
+    "title": "العروض",
+    "noOffers": "لا توجد عروض حالية",
+    "active": "نشط",
+    "expired": "منتهي",
+    "discount": "خصم",
+    "validFrom": "يبدأ من",
+    "validUntil": "ينتهي في"
+  }
+}

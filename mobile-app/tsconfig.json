@@ -1,0 +1,39 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "baseUrl": ".",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "@screens/*": [
+        "src/screens/*"
+      ],
+      "@components/*": [
+        "src/components/*"
+      ],
+      "@services/*": [
+        "src/services/*"
+      ],
+      "@navigation/*": [
+        "src/navigation/*"
+      ],
+      "@contexts/*": [
+        "src/contexts/*"
+      ],
+      "@i18n/*": [
+        "src/i18n/*"
+      ],
+      "@types": [
+        "src/types"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ]
+}

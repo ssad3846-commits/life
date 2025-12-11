@@ -1,0 +1,102 @@
+workflows:
+  ios-workflow:
+    name: iOS App Store Build
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: Codemagic
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.lifestylegym.member
+      vars:
+        BUNDLE_ID: "com.lifestylegym.member"
+        XCODE_WORKSPACE: "SmartGym.xcworkspace"
+        XCODE_SCHEME: "SmartGym"
+      node: 18
+    scripts:
+      - name: Install dependencies
+        script: |
+          cd mobile-app
+          npm install
+      - name: Install CocoaPods dependencies
+        script: |
+          cd mobile-app/ios
+          pod install
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Increment build number
+        script: |
+          cd mobile-app/ios
+          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_ID")
+          agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
+      - name: Build ipa for distribution
+        script: |
+          cd mobile-app/ios
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - mobile-app/ios/build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - mobile-app/ios/*.xcresult
+    publishing:
+      email:
+        recipients:
+          - your-email@example.com
+        notify:
+          success: true
+          failure: true
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        beta_groups:
+          - Internal Testers
+        submit_to_app_store: false
+
+  expo-ios-workflow:
+    name: Expo iOS Build (Recommended)
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: Codemagic
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.lifestylegym.member
+      vars:
+        EXPO_TOKEN: $EXPO_TOKEN
+      node: 18
+    scripts:
+      - name: Install dependencies
+        script: |
+          cd mobile-app
+          npm install
+          npm install -g expo-cli eas-cli
+      - name: Expo login
+        script: |
+          echo "Using EXPO_TOKEN for authentication"
+      - name: Run Expo Prebuild
+        script: |
+          cd mobile-app
+          npx expo prebuild --platform ios --clean
+      - name: Install CocoaPods
+        script: |
+          cd mobile-app/ios
+          pod install
+      - name: Set up code signing
+        script: |
+          xcode-project use-profiles
+      - name: Build IPA
+        script: |
+          cd mobile-app/ios
+          xcode-project build-ipa \
+            --workspace "SmartGym.xcworkspace" \
+            --scheme "SmartGym"
+    artifacts:
+      - mobile-app/ios/build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
