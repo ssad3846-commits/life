@@ -12,7 +12,7 @@ workflows:
       cocoapods: default
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.lifestylegym.member
+        bundle_identifier: com.saad.lifestylegym
     scripts:
       - name: Install dependencies
         script: npm install
