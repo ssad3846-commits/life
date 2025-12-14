@@ -5,7 +5,7 @@ workflows:
     instance_type: mac_mini_m2
     working_directory: mobile-app
     integrations:
-      app_store_connect: LifestyleGym
+      app_store_connect: Developer Portal
     environment:
       node: 18
       xcode: 16.2
