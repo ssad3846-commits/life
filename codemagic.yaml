@@ -20,10 +20,12 @@ workflows:
       - name: Build iOS
         script: |
           cd ios
-          xcodebuild -workspace lifestylegym.xcworkspace \
-            -scheme lifestylegym \
+          WORKSPACE=$(find . -maxdepth 1 -name "*.xcworkspace" -type d | head -1)
+          SCHEME=$(basename "$WORKSPACE" .xcworkspace)
+          xcodebuild -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
             -configuration Release \
-            -archivePath ../build/lifestylegym.xcarchive \
+            -archivePath ../build/app.xcarchive \
             archive CODE_SIGNING_ALLOWED=NO
     artifacts:
-      - build/lifestylegym.xcarchive
+      - build/app.xcarchive
