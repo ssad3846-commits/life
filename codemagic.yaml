@@ -23,7 +23,13 @@ workflows:
       - name: Install CocoaPods
         script: cd ios && pod install
       - name: Set up code signing
-        script: xcode-project use-profiles
+        script: |
+          # Create provisioning profile if not exists
+          app-store-connect fetch-signing-files com.saad.lifestylegym.member1 \
+            --type IOS_APP_STORE \
+            --create
+          # Use the profiles
+          xcode-project use-profiles
       - name: Build IPA
         script: |
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" -type d | head -1)
