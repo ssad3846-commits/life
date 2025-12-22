@@ -25,7 +25,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.lifestylegym.member",
+      "bundleIdentifier": "com.saad.lifestylegym.member1",
       "buildNumber": "1",
       "infoPlist": {
         "NSCameraUsageDescription": "This app requires camera access for profile photos.",
