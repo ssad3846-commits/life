@@ -22,8 +22,11 @@ workflows:
         script: npx expo prebuild --platform ios --clean
       - name: Set up keychain and fetch signing files
         script: |
+          # تهيئة مخزن المفاتيح لتثبيت الشهادات
           keychain initialize
+          # جلب أو إنشاء ملف التوفير والشهادة من Apple تلقائياً
           app-store-connect fetch-signing-files "com.saad.lifestylegym.member1" --type IOS_APP_STORE --create
+          # ربط الملفات المستلمة بمشروع Xcode
           xcode-project use-profiles
       - name: Install CocoaPods
         script: cd ios && pod install
