@@ -14,7 +14,7 @@ workflows:
         distribution_type: app_store
         bundle_identifier: com.saad.lifestylegym.member1
         provisioning_profiles:
-          - Lifestyle_Gym_Member_AppStore  # (1) إجبار النظام على استخدام هذا الملف الموجود في حسابك
+          - Lifestyle_Gym_Member_AppStore1  # (1) إجبار النظام على استخدام هذا الملف الموجود في حسابك
     scripts:
       - name: Install dependencies
         script: npm install
