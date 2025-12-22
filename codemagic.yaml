@@ -23,13 +23,12 @@ workflows:
       - name: Expo prebuild
         script: |
           cd mobile-app
-          # نمرر المعرف يدوياً للتأكد من تحديث إعدادات Xcode
           npx expo prebuild --platform ios --clean --no-install
       - name: Set up code signing
         script: |
           keychain initialize
-          # جلب ملفات التوفير والشهادات التي رفعتها يدوياً
-          xcode-project use-profiles --bundle-id "com.saad.lifestylegym.member1"
+          # تم حذف الخاصية التي تسببت في الخطأ
+          xcode-project use-profiles
       - name: Install CocoaPods
         script: |
           cd mobile-app/ios
@@ -39,7 +38,7 @@ workflows:
           cd mobile-app
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" -type d | head -1)
           SCHEME=$(basename "$WORKSPACE" .xcworkspace)
-          # نستخدم أمر Xcode المباشر لضمان التوقيع الصحيح
+          # بناء التطبيق مع السماح بالتحديثات التلقائية لفك تعليق الخطأ 65
           xcode-project build-ipa \
             --workspace "$WORKSPACE" \
             --scheme "$SCHEME" \
