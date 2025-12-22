@@ -13,6 +13,8 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.saad.lifestylegym.member1
+        provisioning_profiles:
+          - Lifestyle_Gym_Member_AppStore  # (1) إجبار النظام على استخدام هذا الملف الموجود في حسابك
     scripts:
       - name: Install dependencies
         script: npm install
@@ -20,16 +22,16 @@ workflows:
         script: npm install -g expo-cli eas-cli
       - name: Expo prebuild
         script: npx expo prebuild --platform ios --clean
-      - name: Set up keychain and fetch signing files
-        script: |
-          # تهيئة مخزن المفاتيح لتثبيت الشهادات
-          keychain initialize
-          # جلب أو إنشاء ملف التوفير والشهادة من Apple تلقائياً
-          app-store-connect fetch-signing-files "com.saad.lifestylegym.member1" --type IOS_APP_STORE --create
-          # ربط الملفات المستلمة بمشروع Xcode
-          xcode-project use-profiles
       - name: Install CocoaPods
         script: cd ios && pod install
+      - name: Set up signing
+        script: |
+          keychain initialize
+          # (2) جلب الملف المحدد بالاسم بدلاً من إنشاء جديد
+          app-store-connect fetch-signing-files "com.saad.lifestylegym.member1" \
+            --type IOS_APP_STORE \
+            --profile-name "Lifestyle_Gym_Member_AppStore"
+          xcode-project use-profiles
       - name: Build IPA
         script: |
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" -type d | head -1)
