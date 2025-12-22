@@ -22,7 +22,7 @@ workflows:
       - name: Set up code signing
         script: |
           keychain initialize
-          # جلب الشهادات أو إنشاؤها تلقائياً لضمان التطابق التام
+          # جلب الشهادات وإنشاء ملف توفير جديد تلقائياً لضمان التطابق
           app-store-connect fetch-signing-files "com.saad.lifestylegym.member1" \
             --type IOS_APP_STORE \
             --create
