@@ -23,12 +23,12 @@ workflows:
       - name: Expo prebuild
         script: |
           cd mobile-app
-          # التأكد من تهيئة المشروع باستخدام المعرف الصحيح
+          # نضمن تهيئة المشروع بالمعرف الصحيح برمجياً
           npx expo prebuild --platform ios --clean --no-install
       - name: Set up code signing
         script: |
           keychain initialize
-          # جلب ملفات التوفير المرفوعة يدوياً في إعدادات الفريق
+          # جلب ملفات التوقيع اليدوي التي رفعتها في Teams
           xcode-project use-profiles
       - name: Install CocoaPods
         script: |
@@ -39,11 +39,10 @@ workflows:
           cd mobile-app
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" -type d | head -1)
           SCHEME=$(basename "$WORKSPACE" .xcworkspace)
-          # بناء التطبيق مع فرض المعرف الصحيح وحذف أعلام التحديث التلقائي
+          # نستخدم الأمر الصافي دون أي إضافات تسبب أخطاء الصيغة
           xcode-project build-ipa \
             --workspace "$WORKSPACE" \
-            --scheme "$SCHEME" \
-            --project-flags="PRODUCT_BUNDLE_IDENTIFIER=com.saad.lifestylegym.member1"
+            --scheme "$SCHEME"
     artifacts:
       - mobile-app/ios/build/remote/ipa/*.ipa
     publishing:
