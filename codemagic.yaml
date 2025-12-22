@@ -23,11 +23,12 @@ workflows:
       - name: Expo prebuild
         script: |
           cd mobile-app
-          # نضمن أن المعرف هو com.saad.lifestylegym.member1 أثناء البناء
+          # نحدد المعرف بدقة هنا لضمان تهيئة مشروع Xcode بشكل صحيح
           npx expo prebuild --platform ios --clean --no-install
       - name: Set up code signing
         script: |
           keychain initialize
+          # هذا الأمر سيجلب الشهادات التي رفعتها يدوياً في إعدادات الفريق
           xcode-project use-profiles
       - name: Install CocoaPods
         script: |
@@ -36,13 +37,12 @@ workflows:
       - name: Build IPA
         script: |
           cd mobile-app
-          # نحدد المسار بدقة لضمان العثور على المشروع
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" -type d | head -1)
           SCHEME=$(basename "$WORKSPACE" .xcworkspace)
+          # قمنا بحذف السطر الذي سبب الخطأ وتعديل طريقة البناء
           xcode-project build-ipa \
             --workspace "$WORKSPACE" \
-            --scheme "$SCHEME" \
-            --bundle-id "com.saad.lifestylegym.member1"
+            --scheme "$SCHEME"
     artifacts:
       - mobile-app/ios/build/remote/ipa/*.ipa
     publishing:
