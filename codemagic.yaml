@@ -10,8 +10,7 @@ workflows:
       xcode: 16.2
       ios_signing:
         distribution_type: app_store
-        # تم التعديل ليطابق المعرف الجديد في app.json وحساب Apple
-        bundle_identifier: com.lifestylegym.member 
+        bundle_identifier: com.saad.lifestylegym.member1
     scripts:
       - name: Install dependencies
         script: npm install
@@ -22,8 +21,8 @@ workflows:
       - name: Set up code signing
         script: |
           keychain initialize
-          # جلب ملفات التعريف للمعرف الصحيح com.lifestylegym.member
-          app-store-connect fetch-signing-files "com.lifestylegym.member" \
+          # جلب أو إنشاء ملفات التعريف للمعرف المعتمد com.saad.lifestylegym.member1
+          app-store-connect fetch-signing-files "com.saad.lifestylegym.member1" \
             --type IOS_APP_STORE \
             --create
           xcode-project use-profiles
