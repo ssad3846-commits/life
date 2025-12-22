@@ -20,14 +20,15 @@ workflows:
         script: npm install -g expo-cli eas-cli
       - name: Expo prebuild
         script: npx expo prebuild --platform ios --clean
-      - name: Install CocoaPods
-        script: cd ios && pod install
-      - name: Set up code signing
+      - name: Initialize keychain and fetch signing files  # خطوة مدمجة ومهمة جداً
         script: |
+          keychain initialize
           app-store-connect fetch-signing-files com.saad.lifestylegym.member1 \
             --type IOS_APP_STORE \
             --create
           xcode-project use-profiles
+      - name: Install CocoaPods
+        script: cd ios && pod install
       - name: Build IPA
         script: |
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" -type d | head -1)
