@@ -13,30 +13,36 @@ workflows:
         bundle_identifier: com.saad.lifestylegym.member1
     scripts:
       - name: Install dependencies
-        script: npm install
+        script: |
+          cd mobile-app
+          npm install
       - name: Install Expo CLI
-        script: npm install -g expo-cli eas-cli
+        script: |
+          cd mobile-app
+          npm install -g expo-cli eas-cli
       - name: Expo prebuild
-        script: npx expo prebuild --platform ios --clean
+        script: |
+          cd mobile-app
+          npx expo prebuild --platform ios --clean
       - name: Set up code signing
         script: |
           keychain initialize
-          # جلب أو إنشاء ملفات التعريف للمعرف المعتمد com.saad.lifestylegym.member1
-          app-store-connect fetch-signing-files "com.saad.lifestylegym.member1" \
-            --type IOS_APP_STORE \
-            --create
+          # نستخدم الملفات التي رفعتها يدوياً في إعدادات الفريق
           xcode-project use-profiles
       - name: Install CocoaPods
-        script: cd ios && pod install
+        script: |
+          cd mobile-app/ios
+          pod install
       - name: Build IPA
         script: |
+          cd mobile-app
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" -type d | head -1)
           SCHEME=$(basename "$WORKSPACE" .xcworkspace)
           xcode-project build-ipa \
             --workspace "$WORKSPACE" \
             --scheme "$SCHEME"
     artifacts:
-      - build/ios/ipa/*.ipa
+      - mobile-app/build/ios/ipa/*.ipa
     publishing:
       app_store_connect:
         auth: integration
