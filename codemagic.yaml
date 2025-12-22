@@ -9,12 +9,9 @@ workflows:
     environment:
       node: 18
       xcode: 16.2
-      cocoapods: default
       ios_signing:
-        # تم إزالة distribution_type و bundle_identifier لمنع التضارب
-        # سنستخدم التحديد اليدوي للملف الموجود في حسابك:
-        provisioning_profiles:
-          - Lifestyle_Gym_Member_AppStore1
+        distribution_type: app_store
+        bundle_identifier: com.saad.lifestylegym.member1
     scripts:
       - name: Install dependencies
         script: npm install
@@ -22,14 +19,13 @@ workflows:
         script: npm install -g expo-cli eas-cli
       - name: Expo prebuild
         script: npx expo prebuild --platform ios --clean
-      - name: Set up signing
+      - name: Set up code signing
         script: |
           keychain initialize
-          # هذا الأمر سيجلب الملف المحدد بالاسم من حساب Apple
+          # جلب الشهادات وإنشاء ملف توفير جديد تلقائياً لضمان التطابق
           app-store-connect fetch-signing-files "com.saad.lifestylegym.member1" \
             --type IOS_APP_STORE \
-            --profile-name "Lifestyle_Gym_Member_AppStore"
-          # تفعيل الملفات
+            --create
           xcode-project use-profiles
       - name: Install CocoaPods
         script: cd ios && pod install
@@ -42,7 +38,6 @@ workflows:
             --scheme "$SCHEME"
     artifacts:
       - build/ios/ipa/*.ipa
-      - "**/*.ipa"
     publishing:
       app_store_connect:
         auth: integration
