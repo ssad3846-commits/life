@@ -23,7 +23,7 @@ workflows:
       - name: Expo prebuild
         script: |
           cd mobile-app
-          # سيقوم هذا الأمر الآن بقراءة رقم الفريق من ملف app.json تلقائياً
+          # حذف المجلد القديم لضمان قراءة رقم الفريق من app.json الجديد
           rm -rf ios
           npx expo prebuild --platform ios --clean --no-install
       - name: Set up code signing
@@ -39,7 +39,7 @@ workflows:
           cd mobile-app
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" -type d | head -1)
           SCHEME=$(basename "$WORKSPACE" .xcworkspace)
-          # عدنا للأمر الصحيح بعد إصلاح app.json
+          # البناء بدون أي أعلام إضافية لأن المشروع أصبح صحيحاً الآن
           xcode-project build-ipa \
             --workspace "$WORKSPACE" \
             --scheme "$SCHEME"
