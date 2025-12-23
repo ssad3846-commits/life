@@ -24,7 +24,7 @@ workflows:
         script: |
           cd mobile-app
           rm -rf ios
-          # تأكد أنك رفعت app.json الذي يحتوي على appleTeamId لـ GitHub
+          # تأكد أن app.json يحتوي على Team ID
           npx expo prebuild --platform ios --clean --no-install
       - name: Set up code signing
         script: |
@@ -34,53 +34,61 @@ workflows:
         script: |
           cd mobile-app/ios
           pod install
-      - name: Build IPA (Safe Strategy)
+      - name: Build IPA (Manual Control Strategy)
         script: |
           cd mobile-app
+          
+          # 1. تجهيز المتغيرات وكشف اسم البروفايل
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" -type d | head -1)
           SCHEME=$(basename "$WORKSPACE" .xcworkspace)
+          PROFILES_DIR=$HOME/Library/MobileDevice/Provisioning\ Profiles
+          PROFILE_PATH=$(find "$PROFILES_DIR" -name "*.mobileprovision" | head -1)
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' /dev/stdin <<< $(security cms -D -i "$PROFILE_PATH"))
           
-          echo "🚀 Step 1: Starting Archive..."
-          # محاولة الأرشفة
-          xcode-project build-ipa --workspace "$WORKSPACE" --scheme "$SCHEME" || true
-          
-          echo "🔍 Step 2: Checking for Archive..."
-          ARCHIVE_PATH=$(find build/ios/xcarchive -name "*.xcarchive" | head -1)
-          
-          if [ -d "$ARCHIVE_PATH" ]; then
-            echo "✅ Archive found at $ARCHIVE_PATH. Starting Manual Export..."
-            
-            # استخراج اسم البروفايل
-            PROFILES_DIR=$HOME/Library/MobileDevice/Provisioning\ Profiles
-            PROFILE_PATH=$(find "$PROFILES_DIR" -name "*.mobileprovision" | head -1)
-            PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' /dev/stdin <<< $(security cms -D -i "$PROFILE_PATH"))
-            echo "Using Profile: $PROFILE_NAME"
+          echo "✅ Detected Profile: $PROFILE_NAME"
+          echo "🚀 Starting Raw xcodebuild Archive..."
 
-            # إنشاء ملف الخيارات بطريقة آمنة جداً (سطر بسطر) لتجنب أخطاء Syntax
-            echo '<?xml version="1.0" encoding="UTF-8"?>' > export_options.plist
-            echo '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' >> export_options.plist
-            echo '<plist version="1.0">' >> export_options.plist
-            echo '<dict>' >> export_options.plist
-            echo '    <key>method</key><string>app-store</string>' >> export_options.plist
-            echo '    <key>teamID</key><string>2382ZG75VP</string>' >> export_options.plist
-            echo '    <key>signingStyle</key><string>manual</string>' >> export_options.plist
-            echo '    <key>signingCertificate</key><string>Apple Distribution</string>' >> export_options.plist
-            echo '    <key>provisioningProfiles</key>' >> export_options.plist
-            echo '    <dict>' >> export_options.plist
-            echo "        <key>com.saad.lifestylegym.member1</key><string>$PROFILE_NAME</string>" >> export_options.plist
-            echo '    </dict>' >> export_options.plist
-            echo '</dict>' >> export_options.plist
-            echo '</plist>' >> export_options.plist
+          # 2. تنفيذ الأرشفة يدوياً مع إجبار الإعدادات (هذه الخطوة تحل الخطأ 65)
+          xcodebuild archive \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -archivePath build/ios.xcarchive \
+            -configuration Release \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM=2382ZG75VP \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
+            CODE_SIGN_IDENTITY="Apple Distribution"
+
+          # 3. التحقق من نجاح الأرشفة
+          if [ -d "build/ios.xcarchive" ]; then
+            echo "✅ Archive successful! Starting Export..."
             
-            # تنفيذ التصدير
+            # 4. إنشاء ملف إعدادات التصدير
+            cat > export_options.plist <<EOF
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+            <plist version="1.0">
+            <dict>
+                <key>method</key><string>app-store</string>
+                <key>teamID</key><string>2382ZG75VP</string>
+                <key>signingStyle</key><string>manual</string>
+                <key>signingCertificate</key><string>Apple Distribution</string>
+                <key>provisioningProfiles</key>
+                <dict>
+                    <key>com.saad.lifestylegym.member1</key><string>$PROFILE_NAME</string>
+                </dict>
+            </dict>
+            </plist>
+            EOF
+            
+            # 5. تصدير ملف IPA
             xcodebuild -exportArchive \
-              -archivePath "$ARCHIVE_PATH" \
-              -exportPath "build/ios/ipa_output" \
+              -archivePath build/ios.xcarchive \
+              -exportPath build/ios/ipa_output \
               -exportOptionsPlist export_options.plist
               
           else
-            echo "❌ Critical: Archive failed to create!"
-            echo "Please ensure app.json with 'appleTeamId' is pushed to GitHub."
+            echo "❌ Failed to create archive. Check the logs above."
             exit 1
           fi
     artifacts:
