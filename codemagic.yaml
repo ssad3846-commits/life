@@ -24,6 +24,7 @@ workflows:
         script: |
           cd mobile-app
           rm -rf ios
+          # تأكدنا أن app.json يحتوي على Team ID
           npx expo prebuild --platform ios --clean --no-install
       - name: Set up code signing
         script: |
@@ -37,7 +38,14 @@ workflows:
         script: |
           cd mobile-app
           
-          # 1. إنشاء ملف خيارات التصدير يدوياً لحل مشكلة الملف المفقود
+          # 1. سكريبت ذكي لاستخراج اسم البروفايل الداخلي تلقائياً
+          # هذا يحل مشكلة "No profiles found"
+          PROFILES_DIR=$HOME/Library/MobileDevice/Provisioning\ Profiles
+          PROFILE_PATH=$(find "$PROFILES_DIR" -name "*.mobileprovision" | head -1)
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' /dev/stdin <<< $(security cms -D -i "$PROFILE_PATH"))
+          echo "Using Provisioning Profile: $PROFILE_NAME"
+
+          # 2. إنشاء ملف خيارات التصدير بمعلومات دقيقة 100%
           cat > export_options.plist <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -47,11 +55,18 @@ workflows:
               <string>app-store</string>
               <key>teamID</key>
               <string>2382ZG75VP</string>
+              <key>signingStyle</key>
+              <string>manual</string>
+              <key>provisioningProfiles</key>
+              <dict>
+                  <key>com.saad.lifestylegym.member1</key>
+                  <string>$PROFILE_NAME</string>
+              </dict>
           </dict>
           </plist>
           EOF
 
-          # 2. تشغيل البناء باستخدام الملف الذي أنشأناه للتو
+          # 3. تشغيل البناء باستخدام الملف المجهز
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" -type d | head -1)
           SCHEME=$(basename "$WORKSPACE" .xcworkspace)
           
