@@ -23,13 +23,12 @@ workflows:
       - name: Expo prebuild
         script: |
           cd mobile-app
-          # نحذف مجلد iOS القديم لضمان إنشاء مشروع جديد يحتوي على Team ID
+          # سيقوم هذا الأمر الآن بقراءة رقم الفريق من ملف app.json تلقائياً
           rm -rf ios
           npx expo prebuild --platform ios --clean --no-install
       - name: Set up code signing
         script: |
           keychain initialize
-          # هذا الأمر سيقوم بربط الشهادة التي رفعتها
           xcode-project use-profiles
       - name: Install CocoaPods
         script: |
@@ -40,11 +39,10 @@ workflows:
           cd mobile-app
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" -type d | head -1)
           SCHEME=$(basename "$WORKSPACE" .xcworkspace)
-          # نمرر رقم الفريق والمعرف إجبارياً باستخدام xcargs
+          # عدنا للأمر الصحيح بعد إصلاح app.json
           xcode-project build-ipa \
             --workspace "$WORKSPACE" \
-            --scheme "$SCHEME" \
-            --xcargs "DEVELOPMENT_TEAM=2382ZG75VP PRODUCT_BUNDLE_IDENTIFIER=com.saad.lifestylegym.member1 CODE_SIGN_STYLE=Manual"
+            --scheme "$SCHEME"
     artifacts:
       - mobile-app/ios/build/remote/ipa/*.ipa
     publishing:
