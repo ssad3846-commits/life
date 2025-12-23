@@ -24,7 +24,6 @@ workflows:
         script: |
           cd mobile-app
           rm -rf ios
-          # تأكدنا أن app.json يحتوي على Team ID
           npx expo prebuild --platform ios --clean --no-install
       - name: Set up code signing
         script: |
@@ -38,14 +37,15 @@ workflows:
         script: |
           cd mobile-app
           
-          # 1. سكريبت ذكي لاستخراج اسم البروفايل الداخلي تلقائياً
-          # هذا يحل مشكلة "No profiles found"
+          # 1. استخراج اسم البروفايل بدقة
           PROFILES_DIR=$HOME/Library/MobileDevice/Provisioning\ Profiles
           PROFILE_PATH=$(find "$PROFILES_DIR" -name "*.mobileprovision" | head -1)
+          
+          # نستخرج الاسم الداخلي (Name) من ملف البروفايل
           PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' /dev/stdin <<< $(security cms -D -i "$PROFILE_PATH"))
-          echo "Using Provisioning Profile: $PROFILE_NAME"
+          echo "Detected Profile Name: $PROFILE_NAME"
 
-          # 2. إنشاء ملف خيارات التصدير بمعلومات دقيقة 100%
+          # 2. إنشاء ملف التصدير مع تحديد نوع الشهادة "Apple Distribution"
           cat > export_options.plist <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -57,6 +57,8 @@ workflows:
               <string>2382ZG75VP</string>
               <key>signingStyle</key>
               <string>manual</string>
+              <key>signingCertificate</key>
+              <string>Apple Distribution</string>
               <key>provisioningProfiles</key>
               <dict>
                   <key>com.saad.lifestylegym.member1</key>
@@ -65,8 +67,12 @@ workflows:
           </dict>
           </plist>
           EOF
+          
+          # طباعة محتوى الملف للتأكد (Debugging)
+          echo "Generated export_options.plist:"
+          cat export_options.plist
 
-          # 3. تشغيل البناء باستخدام الملف المجهز
+          # 3. تشغيل البناء
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" -type d | head -1)
           SCHEME=$(basename "$WORKSPACE" .xcworkspace)
           
