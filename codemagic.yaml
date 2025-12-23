@@ -3,14 +3,16 @@ workflows:
     name: Expo iOS Build
     max_build_duration: 120
     instance_type: mac_mini_m2
+
     integrations:
       app_store_connect: Codemagic2
+
     environment:
       node: 18
       xcode: 16.2
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.saad.lifestylegym.member1
+      vars:
+        EXPO_USE_APPLE_CERTIFICATE: "true"
+        EXPO_NO_CAPABILITY_SYNC: "1"
 
     scripts:
       - name: Install dependencies
