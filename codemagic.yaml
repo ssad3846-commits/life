@@ -24,6 +24,7 @@ workflows:
         script: |
           cd mobile-app
           rm -rf ios
+          # نعتمد على app.json الصحيح الذي يحتوي على Team ID
           npx expo prebuild --platform ios --clean --no-install
       - name: Set up code signing
         script: |
@@ -33,55 +34,65 @@ workflows:
         script: |
           cd mobile-app/ios
           pod install
-      - name: Build IPA
+      - name: Build IPA (Hybrid Strategy)
         script: |
           cd mobile-app
-          
-          # 1. استخراج اسم البروفايل بدقة
-          PROFILES_DIR=$HOME/Library/MobileDevice/Provisioning\ Profiles
-          PROFILE_PATH=$(find "$PROFILES_DIR" -name "*.mobileprovision" | head -1)
-          
-          # نستخرج الاسم الداخلي (Name) من ملف البروفايل
-          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' /dev/stdin <<< $(security cms -D -i "$PROFILE_PATH"))
-          echo "Detected Profile Name: $PROFILE_NAME"
-
-          # 2. إنشاء ملف التصدير مع تحديد نوع الشهادة "Apple Distribution"
-          cat > export_options.plist <<EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>method</key>
-              <string>app-store</string>
-              <key>teamID</key>
-              <string>2382ZG75VP</string>
-              <key>signingStyle</key>
-              <string>manual</string>
-              <key>signingCertificate</key>
-              <string>Apple Distribution</string>
-              <key>provisioningProfiles</key>
-              <dict>
-                  <key>com.saad.lifestylegym.member1</key>
-                  <string>$PROFILE_NAME</string>
-              </dict>
-          </dict>
-          </plist>
-          EOF
-          
-          # طباعة محتوى الملف للتأكد (Debugging)
-          echo "Generated export_options.plist:"
-          cat export_options.plist
-
-          # 3. تشغيل البناء
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" -type d | head -1)
           SCHEME=$(basename "$WORKSPACE" .xcworkspace)
           
-          xcode-project build-ipa \
-            --workspace "$WORKSPACE" \
-            --scheme "$SCHEME" \
-            --export-options-plist export_options.plist
+          echo "🚀 Step 1: Starting Archive (Standard)..."
+          # نشغل البناء العادي لكن نتجاهل خطأ التصدير باستخدام "|| true"
+          # هذا يضمن نجاح الأرشفة كما حدث في البناء 109
+          xcode-project build-ipa --workspace "$WORKSPACE" --scheme "$SCHEME" || true
+          
+          echo "🔍 Step 2: Checking for Archive..."
+          # نبحث عن ملف الأرشيف الذي تم إنشاؤه
+          ARCHIVE_PATH=$(find build/ios/xcarchive -name "*.xcarchive" | head -1)
+          
+          if [ -d "$ARCHIVE_PATH" ]; then
+            echo "✅ Archive found at $ARCHIVE_PATH. Starting Manual Export..."
+            
+            # 1. استخراج اسم البروفايل تلقائياً
+            PROFILES_DIR=$HOME/Library/MobileDevice/Provisioning\ Profiles
+            PROFILE_PATH=$(find "$PROFILES_DIR" -name "*.mobileprovision" | head -1)
+            PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' /dev/stdin <<< $(security cms -D -i "$PROFILE_PATH"))
+            echo "Using Profile: $PROFILE_NAME"
+
+            # 2. إنشاء ملف خيارات التصدير (مع إصلاح الشهادة)
+            cat > export_options.plist <<EOF
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+            <plist version="1.0">
+            <dict>
+                <key>method</key>
+                <string>app-store</string>
+                <key>teamID</key>
+                <string>2382ZG75VP</string>
+                <key>signingStyle</key>
+                <string>manual</string>
+                <key>signingCertificate</key>
+                <string>Apple Distribution</string>
+                <key>provisioningProfiles</key>
+                <dict>
+                    <key>com.saad.lifestylegym.member1</key>
+                    <string>$PROFILE_NAME</string>
+                </dict>
+            </dict>
+            </plist>
+            EOF
+            
+            # 3. تشغيل التصدير اليدوي
+            xcodebuild -exportArchive \
+              -archivePath "$ARCHIVE_PATH" \
+              -exportPath "build/ios/ipa_output" \
+              -exportOptionsPlist export_options.plist
+              
+          else
+            echo "❌ Critical: Archive not found! The build phase failed."
+            exit 1
+          fi
     artifacts:
-      - mobile-app/ios/build/remote/ipa/*.ipa
+      - mobile-app/build/ios/ipa_output/*.ipa
     publishing:
       app_store_connect:
         auth: integration
