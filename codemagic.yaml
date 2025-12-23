@@ -20,11 +20,15 @@ workflows:
         script: |
           cd mobile-app
           npm install -g expo-cli eas-cli
-      - name: Expo prebuild
+      - name: Expo prebuild (With AppleTeamId Fix)
         script: |
           cd mobile-app
           rm -rf ios
-          # تأكدنا أن app.json يحتوي على appleTeamId: 2382ZG75VP
+          # خدعة برمجية: نحذف سطر appleTeamId مؤقتاً لنعود لحالة البناء 109 الناجحة
+          # هذا يمنع التعارض الذي يسبب الخطأ 65
+          sed -i '' '/"appleTeamId":/d' app.json
+          
+          # الآن نولد المشروع وهو "نظيف" بدون توقيع مسبق
           npx expo prebuild --platform ios --clean --no-install
       - name: Set up code signing
         script: |
@@ -34,32 +38,34 @@ workflows:
         script: |
           cd mobile-app/ios
           pod install
-      - name: Build IPA (Final Stabilized Version)
+      - name: Build IPA (Success Formula)
         script: |
           cd mobile-app
           
-          # 1. كشف اسم البروفايل بدقة
+          # 1. كشف اسم البروفايل (لحل مشكلة التصدير)
           PROFILES_DIR=$HOME/Library/MobileDevice/Provisioning\ Profiles
           PROFILE_PATH=$(find "$PROFILES_DIR" -name "*.mobileprovision" | head -1)
           PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' /dev/stdin <<< $(security cms -D -i "$PROFILE_PATH"))
           echo "✅ Using Profile: $PROFILE_NAME"
 
-          # 2. إنشاء ملف التصدير باستخدام echo لضمان عدم حدوث Syntax Error
+          # 2. إنشاء ملف التصدير مع تصحيح اسم الشهادة (حل الخطأ 70)
           echo '<?xml version="1.0" encoding="UTF-8"?>' > export_options.plist
           echo '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' >> export_options.plist
           echo '<plist version="1.0"><dict>' >> export_options.plist
           echo '  <key>method</key><string>app-store</string>' >> export_options.plist
           echo '  <key>teamID</key><string>2382ZG75VP</string>' >> export_options.plist
           echo '  <key>signingStyle</key><string>manual</string>' >> export_options.plist
+          # هذا السطر هو الجوهر: إجبار استخدام الشهادة الحديثة
           echo '  <key>signingCertificate</key><string>Apple Distribution</string>' >> export_options.plist
           echo '  <key>provisioningProfiles</key><dict>' >> export_options.plist
           echo "    <key>com.saad.lifestylegym.member1</key><string>$PROFILE_NAME</string>" >> export_options.plist
           echo '  </dict></dict></plist>' >> export_options.plist
 
-          # 3. استخدام الأداة التلقائية التي نجحت في الأرشفة في المحاولة 109
+          # 3. استخدام الأداة التلقائية التي نجحت في الأرشفة سابقاً
           WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" -type d | head -1)
           SCHEME=$(basename "$WORKSPACE" .xcworkspace)
           
+          # بما أننا حذفنا TeamId من الملف، ستقوم هذه الأداة بحقنه بنجاح كما فعلت في المرة 109
           xcode-project build-ipa \
             --workspace "$WORKSPACE" \
             --scheme "$SCHEME" \
