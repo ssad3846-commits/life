@@ -1,21 +1,21 @@
 {
   "expo": {
-    "name": "نادي لايف ستايل الرياضي",
-    "slug": "lifestyle-gym-member",
-    "version": "1.0.0",
+    "name": "لايف ستايل الرياضي",
+    "slug": "smart-gym-member",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "notification": {
       "icon": "./assets/notification-icon.png",
-      "color": "#2563eb",
+      "color": "#000000",
       "androidMode": "default",
-      "androidCollapsedTitle": "Lifestyle Gym"
+      "androidCollapsedTitle": "نادي لايف ستايل الرياضي"
     },
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#2563eb"
+      "backgroundColor": "#000000"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -25,61 +25,44 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.saad.lifestylegym.member1",
-      "appleTeamId": "2382ZG75VP",
-      "buildNumber": "1",
+      "bundleIdentifier": "com.saad.lifestylegym.member2",
+      "buildNumber": "10",
       "infoPlist": {
         "NSCameraUsageDescription": "This app requires camera access for profile photos.",
         "NSPhotoLibraryUsageDescription": "This app requires photo library access for profile photos.",
         "ITSAppUsesNonExemptEncryption": false,
         "UIBackgroundModes": [
-          "remote-notification"
+          "remote-notification",
+          "fetch"
         ]
       }
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#2563eb"
-      },
-      "package": "com.saad.lifestylegym.member1",
-      "versionCode": 2,
+      "package": "com.lifestylegym.member2",
+      "versionCode": 10,
       "googleServicesFile": "./google-services.json",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#000000"
+      },
       "permissions": [
         "INTERNET",
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
-        "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.INTERNET",
         "android.permission.RECEIVE_BOOT_COMPLETED",
         "android.permission.VIBRATE",
         "android.permission.POST_NOTIFICATIONS"
-      ],
-      "useNextNotificationsApi": true
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       [
-        "expo-build-properties",
-        {
-          "android": {
-            "compileSdkVersion": 34,
-            "targetSdkVersion": 34,
-            "minSdkVersion": 23,
-            "buildToolsVersion": "34.0.0",
-            "kotlinVersion": "1.9.23"
-          }
-        }
-      ],
-      "expo-file-system",
-      [
         "expo-notifications",
         {
           "icon": "./assets/notification-icon.png",
-          "color": "#2563eb",
+          "color": "#000000",
           "sounds": [],
           "mode": "production"
         }
