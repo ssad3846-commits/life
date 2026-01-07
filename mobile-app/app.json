@@ -3,43 +3,41 @@
     "name": "لايف ستايل الرياضي",
     "slug": "smart-gym-member",
     "version": "1.0.1",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "notification": {
-      "icon": "./assets/notification-icon.png",
-      "color": "#000000",
-      "androidMode": "default",
-      "androidCollapsedTitle": "نادي لايف ستايل الرياضي"
-    },
+
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
+
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+
+    "assetBundlePatterns": ["**/*"],
+
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.saad.lifestylegym.member2",
-      "buildNumber": "10",
+      "buildNumber": "13",
+      "deploymentTarget": "15.1",
       "infoPlist": {
+        "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID for quick login.",
         "NSCameraUsageDescription": "This app requires camera access for profile photos.",
         "NSPhotoLibraryUsageDescription": "This app requires photo library access for profile photos.",
-        "ITSAppUsesNonExemptEncryption": false,
-        "UIBackgroundModes": [
-          "remote-notification",
-          "fetch"
-        ]
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
+
     "android": {
       "package": "com.lifestylegym.member2",
-      "versionCode": 10,
+      "versionCode": 13,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
@@ -48,31 +46,37 @@
       "permissions": [
         "INTERNET",
         "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
-        "android.permission.RECEIVE_BOOT_COMPLETED",
-        "android.permission.VIBRATE",
-        "android.permission.POST_NOTIFICATIONS"
+        "WRITE_EXTERNAL_STORAGE"
       ]
     },
+
     "web": {
       "favicon": "./assets/favicon.png"
     },
+
     "plugins": [
+      "expo-local-authentication",
       [
-        "expo-notifications",
+        "expo-build-properties",
         {
-          "icon": "./assets/notification-icon.png",
-          "color": "#000000",
-          "sounds": [],
-          "mode": "production"
+          "android": {
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "buildToolsVersion": "34.0.0"
+          },
+          "ios": {
+            "deploymentTarget": "15.1"
+          }
         }
       ]
     ],
+
     "extra": {
       "eas": {
         "projectId": "386951cf-4dad-4cde-9be1-9e904f9b44ee"
       }
     },
+
     "owner": "saad3846"
   }
 }
